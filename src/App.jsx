@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import RingLoader from "react-spinners/RingLoader";
+import { useEffect, useState } from 'react'
 import boyGif from './assets/gifs/boy.gif'
 import girlGif from './assets/gifs/girl.gif'
 import boyPic from './assets/images/boy.png'
@@ -15,12 +15,14 @@ function App() {
   const [topic , setTopic] = useState('')
   const [boyResult  , setBoyResult] = useState('')
   const [girlResult  , setGirlResult] = useState('')
+  const [processingMessage , setProcessingMessage] = useState({showBoyLoader : false , showGirlLoader : false})
 
 
   const boyImage = boyImageStatus ? boyPic : boyGif; 
   const girlImage = girlImageStatus ? girlPic : girlGif; 
 
   const sendTopic=async()=>{
+    setProcessingMessage({showBoyLoader:true , showGirlLoader:true})
     const botResponse = await model.invoke([
       "human",
       topic
@@ -51,11 +53,18 @@ function App() {
         content : topic
       }
     ])
+    
     setBoyResult(boyResponse.content)
+    setProcessingMessage({showBoyLoader:false})
     setBoyImage(false)
     setGirlResult(girlResponse.content)
+    setProcessingMessage({showGirlLoader:false})
     setGirlImage(false)
   }
+
+  useEffect(()=>{
+
+  },[processingMessage])
   
 
   return (
@@ -88,9 +97,18 @@ function App() {
         <div className='col-span-5 flex flex-col items-center  border-2 border-amber-200'>
           <img src={boyImage} className="h-40 object-contain" alt="Boy" />
           <div className="w-full mt-4 bg-blue-100 text-2xl text-center py-2 h-96">Pros
-              <div className='border-2 h-86 overflow-auto'>
-                <p className='text-sm'> <span dangerouslySetInnerHTML={{__html:boyResult.replace(/\n/g, '<br />')}} ></span></p>
-              </div>
+                {
+                  processingMessage.showBoyLoader ? (
+                    <div className="flex  justify-center p-20">
+                      <RingLoader color='#f542bf' />
+
+                    </div>
+                  ):(                    
+                    <div className='border-2 h-86 overflow-auto'>
+                    <p className='text-sm'> <span dangerouslySetInnerHTML={{__html:boyResult.replace(/\n/g, '<br />')}} ></span></p>
+                    </div>
+                  )
+                }              
 
 
 
@@ -101,10 +119,19 @@ function App() {
         <div className='col-span-5 flex flex-col items-center  border-2 border-amber-200'>
           <img src={girlImage} className="h-40 object-contain" alt="Girl" />
           <div className="w-full mt-4 bg-pink-100 text-center text-2xl py-2 h-96">Cons
-          <div className='border-2 h-86 overflow-auto'>
-                <p className='text-sm'> <span dangerouslySetInnerHTML={{__html:girlResult.replace(/\n/g, '<br />')}} ></span></p>
-              </div>
-          </div>
+          {
+                  processingMessage.showGirlLoader ? (
+                    <div className="flex  justify-center p-20">
+                      <RingLoader color='#4248f5' />
+
+                    </div>
+                  ):(                    
+                    <div className='border-2 h-86 overflow-auto'>
+                    <p className='text-sm'> <span dangerouslySetInnerHTML={{__html:girlResult.replace(/\n/g, '<br />')}} ></span></p>
+                    </div>
+                  )
+                }
+            </div>
           
         </div>
       </div>
