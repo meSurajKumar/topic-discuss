@@ -22,6 +22,8 @@ function App() {
   const girlImage = girlImageStatus ? girlPic : girlGif; 
 
   const sendTopic=async()=>{
+    localStorage.removeItem('boyRespone');
+    localStorage.removeItem('girlRespone');
     setProcessingMessage({showBoyLoader:true , showGirlLoader:true})
     const botResponse = await model.invoke([
       "human",
@@ -55,9 +57,14 @@ function App() {
     ])
     
     setBoyResult(boyResponse.content)
+    const boyLocalData = {'respone':boyResponse.content , topic :topic }
+    const setBoyDataToLocal = localStorage.setItem('boyRespone',JSON.stringify(boyLocalData) )
     setProcessingMessage({showBoyLoader:false})
     setBoyImage(false)
     setGirlResult(girlResponse.content)
+    const girlLocalData = {'respone':boyResponse.content , topic :topic }
+    const setGirlDataToLocal = localStorage.setItem('girlRespone',JSON.stringify(girlLocalData) )
+
     setProcessingMessage({showGirlLoader:false})
     setGirlImage(false)
   }
